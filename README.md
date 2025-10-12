@@ -15,3 +15,5 @@ Os dados foram baixados em CSV.
 ---
 Este trabalho foi ferto sob duas abordagens: R Base, pelo Google Collab (com Jupyter Notebook) e R com o pacote Tidyverse (e associados).
 O _script_ eda_alt.R, como o nome sugere, contém a análise EDA feita utilizando o Tidyverse, e é a versão alternativa.
+
+Os arquivos relevantes a cada entrega podem ser encontrados nas pastas correspondentes.
