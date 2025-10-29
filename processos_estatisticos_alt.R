@@ -69,6 +69,15 @@ media <- function(variavel) {
   soma(variavel) / tam(variavel)
 }
 
+# Variância
+variancia <- function(variavel) {
+  sum((variavel - media(variavel)) ** 2) / (length(variavel) - 1)
+}
+
+# Desvio padrão
+desv_pad <- function(variavel) {
+  sqrt(variancia(variavel))
+}
 # -- Regressão linear --
 
 # Coeficiente angular
@@ -99,4 +108,9 @@ grau_para_rad <- function(grau) {
 # Função para converter de radiano para grau
 rad_para_grau <- function(rad) {
   rad * 180 / pi
+}
+
+# Normalização por Z-score
+znorm <- function(variavel) {
+  (variavel - media(variavel)) / desv_pad(variavel)
 }

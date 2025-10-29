@@ -337,7 +337,7 @@ cor_media |>
 # n = 13: Menor = 0.947
 # Logo, tmos o limite inferior de 13 clusters
 
-# 8. Tangente vista unidmensionalmente ----
+# 8. Ângulo visto unidmensionalmente ----
 df |> 
   count(angulo) |>
   ggplot(aes(x = angulo, y = n)) +
@@ -347,26 +347,40 @@ df |>
 set.seed(42)
 df |> 
   ggplot(aes(x = angulo, y = 0)) +
-  geom_jitter(width = 0, height = 1, alpha = 0.3)
+  geom_jitter(width = 0, height = 1, alpha = 0.2)
 # Análise:
 # O problema do ângulo é que existe muito mais tangentes
 # entre o mesmo intervalo a medidade que se aproxima
-# do ângulode de 90º!
+# do ângulo de de 90º!
+
+
+set.seed(42)
+df |> 
+  ggplot(aes(x = angulo, y = 0)) +
+  geom_jitter(width = 0, size = 3, height = 1, alpha = 0.01) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank()
+  )
+# Análise:
+# Era uma ilusão pelas linhas de grid de fundo...
+# Sem padrão
 
 set.seed(42)
 df |> 
   ggplot(aes(x = tg, y = 0)) +
-  geom_jitter(width = 0, height = 1, alpha = 0.3)
+  geom_jitter(width = 0, height = 1, alpha = 0.2)
 # A tangente não foi muito promissora...
 
 df |> 
   ggplot(aes(x = min_max_normalizar(tg), y = 0)) +
-  geom_jitter(width = 0, height = 1, alpha = 0.3)
+  geom_jitter(width = 0, height = 1, alpha = 0.2)
 # A normalização não funciona tão bem também...
 
 df |> 
   ggplot(aes(x = scale(tg), y = 0)) +
-  geom_jitter(width = 0, height = 1, alpha = 0.3)
+  geom_jitter(width = 0, height = 1, alpha = 0.2)
 # Nope também...
 
 # 9. Contagem de valores infinitos ----
@@ -374,3 +388,112 @@ df |>
   filter(tg == Inf)
 # ... Muitos dados ...
 
+# 10. Gráfico agrupado por pf e pj e recebedor/pagador ----
+## 10.1. Recebedor ----
+df |> 
+  ggplot(aes(x = quantidade, y = valor, color = rec_pfpj)) +
+  geom_point()
+# Análise:
+# Não aparente ser tão bem segmentada nas duas retas
+
+### 10.1.1. Categoria: pf ---
+ggplot() +
+  geom_point(data = df |> filter(rec_pfpj == "pf"), mapping = aes(x = quantidade, y = valor), color = "lightgreen") +
+  geom_point(data = df |> filter(rec_pfpj == "pj"), mapping = aes(x = quantidade, y = valor), color = "lightblue", alpha = 0)
+# Análise:
+# Puramente parte da reta horizontal dois.
+
+
+### 10.1.2. Categoria: pj ---
+ggplot() +
+  geom_point(data = df |> filter(rec_pfpj == "pf"), mapping = aes(x = quantidade, y = valor), color = "lightgreen", alpha = 0) +
+  geom_point(data = df |> filter(rec_pfpj == "pj"), mapping = aes(x = quantidade, y = valor), color = "lightblue")
+# Análise:
+# Vaza para ambas as retas.
+
+## 10.2. Pagador ----
+df |> 
+  ggplot(aes(x = quantidade, y = valor, color = pag_pfpj)) +
+  geom_point()
+# Grupos bem delimitados, com separação aparentemente clara entre eles
+# Contudo é uma ilusão
+
+### 10.2.1. Categoria: pf ---
+ggplot() +
+  geom_point(data = df |> filter(rec_pfpj == "pf"), mapping = aes(x = quantidade, y = valor), color = "lightgreen") +
+  geom_point(data = df |> filter(rec_pfpj == "pj"), mapping = aes(x = quantidade, y = valor), color = "lightblue", alpha = 0)
+# Análise:
+# Apenas parte do grupo dois.
+
+### 10.2.2. Categoria: pj ---
+ggplot() +
+  geom_point(data = df |> filter(rec_pfpj == "pf"), mapping = aes(x = quantidade, y = valor), color = "lightgreen", alpha = 0) +
+  geom_point(data = df |> filter(rec_pfpj == "pj"), mapping = aes(x = quantidade, y = valor), color = "lightblue")
+# Análise:
+# Há vazamento de dados!
+
+# 10.3. Plotando com wrap ----
+# 10.3.1. Para Recebedor ----
+ggplot(df) +
+  geom_point(aes(x = quantidade, y = valor)) +
+  facet_wrap(~rec_pfpj)
+# Análise:
+# Como pode-se ao separar pelas categorias, os grupos de pf
+# se mantém na reta horziontal: muitos PIXs e pequenos valores
+
+# 10.3.2. Para pagador ----
+ggplot(df) +
+  geom_point(aes(x = quantidade, y = valor)) +
+  facet_wrap(~pag_pfpj)
+# Análise:
+# Idem para o anterior
+
+# 11. Tangente, unidimensional, colorida por categoria
+# Usa-se "pag_pfpj' por este ser de melhor segmentação
+set.seed(42)
+df |> 
+  ggplot(aes(x = angulo, y = 0, color = pag_pfpj)) +
+  geom_jitter(width = 0, height = 1, alpha = 0.2)
+
+# Análise:
+# Os espaços entres as retas "sumiram"
+
+set.seed(42)
+df |> 
+  ggplot(aes(x = angulo, y = 0, color = rec_pfpj)) +
+  geom_jitter(width = 0, size = 2, height = 1, alpha = 0.01)+
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank()
+  )
+# Análise:
+# Idêntico ao anterior
+# As retas quase certamente são ilusórias...
+
+# 11. Ângulo 1d com reta vertical ----
+df |> 
+  ggplot() +
+  geom_vline(aes(xintercept = angulo), alpha = 0.02, size = 10) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank()
+  )
+
+# 12. Reta vertical colorida por cluster
+set.seed(42)
+resultados <- kmeans(x = df$angulo, centers = 2)
+
+df$cluster <- as.factor(resultados$cluster)
+
+df |> 
+  ggplot() +
+  geom_vline(aes(xintercept = angulo, colour = cluster), alpha = 0.2, size = 10) +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank()
+  )
+# Análise:
+# Percebe-se onde a divisão foi feita!  
