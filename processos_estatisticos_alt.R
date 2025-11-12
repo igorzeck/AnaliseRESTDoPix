@@ -101,6 +101,11 @@ rad_para_grau <- function(rad) {
   rad * 180 / pi
 }
 
+# Distância euclidiana (hipotenusa)
+hipot <- function(x, y) {
+  sqrt(x**2 + y**2)
+}
+
 # -- Normalização --
 
 # Variância
