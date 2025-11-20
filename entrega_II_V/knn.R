@@ -29,8 +29,12 @@ knn_pred == df$pag_pfpj[index_alvo]
 
 ## 3. KNN iterativamente ----
 set.seed(42)
+
+start_time <- Sys.time()
+
 correto <- c()
-for (i in 1:100) {
+max_iter <- 1e4
+for (i in 1:max_iter) {
   index_alvo = sample(1:nrow(df), 1)
   
   # Prever se pagador é PF, PJ ou nao disponivel
@@ -43,6 +47,11 @@ for (i in 1:100) {
   correto <- append(correto, knn_pred == as.character(df[index_alvo, "pag_pfpj"]))
 }
 
+end_time <- Sys.time()
+delta_t <- end_time - start_time
+cat(paste0("Delta T (KNN): ",round(delta_t, 3), "s"))
+
 # Acurácia
+cat(paste0("Corretos: ", sum(correto), "/",max_iter))
 sum(correto)/length(correto)
-# Acurácia de 92%.
+# Acurácia de 86.7% para 1.000 entradas.
